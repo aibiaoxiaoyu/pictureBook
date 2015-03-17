@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kid.picturebook.R;
@@ -33,9 +34,10 @@ public class RecordActivity extends BaseActivity {
 	private static final int REQUEST_CODE_AUDIO_RECORD = 101;
 	private static final int REQUEST_CODE_AUDIO_LOCAL = 102;
 	private ImageView preview;
+	private TextView tv_page;
 	private DBHelper dbHelper;
-	private PictureBook pictureBook;
-	private BookContent bookContent = new BookContent();
+	private PictureBook temPictureBook;
+	private BookContent temBookContent = new BookContent();
 	private int pages = 0;
 	
 	// 继承BaseActivity，新打开页面时，默认执行父类中onCreate()方法，然后会依次执行initView()和initDate()
@@ -43,6 +45,7 @@ public class RecordActivity extends BaseActivity {
 	public void initView() {// 初始化控件
 		// TODO Auto-generated method stub
 		setContentView(R.layout.activity_record);
+		tv_page = (TextView)findViewById(R.id.tv_page);
 		preview = (ImageView)findViewById(R.id.preview);
 	}
 	
@@ -57,6 +60,7 @@ public class RecordActivity extends BaseActivity {
 		ImageLoader.getInstance().init(configuration);
 		// dbHelper.insert("啦啦");
 		showDialog();
+		// tv_page.setText(pages + "");
 		
 	}
 	
@@ -74,16 +78,16 @@ public class RecordActivity extends BaseActivity {
 						if(TextUtils.isEmpty(title)) {
 							title = "myPictureBook";
 						}
-						String dir = Constants.PICTUREBOOK_PATH_MYBOOKS + "/" + title;
+						temPictureBook = new PictureBook(title, System.currentTimeMillis());
+						String dir = Constants.PICTUREBOOK_PATH_MYBOOKS + "/" + temPictureBook.getBookDir();
 						File file = new File(dir);
 						file.mkdirs();
-						pictureBook = new PictureBook(title);
 						ContentValues cv = new ContentValues();
 						cv.put(Contract.PictureBookContract._TITLE, title);
-						cv.put(Contract.PictureBookContract._CREATE_TIME, System.currentTimeMillis());
+						cv.put(Contract.PictureBookContract._CREATE_TIME, temPictureBook.getCreateTime());
 						long row = dbHelper.insert(Contract.PictureBookContract.TABLE_NAME, cv);
-						pictureBook.setId((int)row);
-						bookContent.setId(pictureBook.getId());
+						temPictureBook.setId((int)row);
+						temBookContent.setBookId(temPictureBook.getId());
 					}
 				}).setNegativeButton("取消", new OnClickListener() {
 					
@@ -142,17 +146,20 @@ public class RecordActivity extends BaseActivity {
 		}
 	}
 	
-	// 下一页
+	// 下一页.
 	public void onNext(View v) {
 		pages++;
+		temBookContent = new BookContent();
+		
 		preview.setBackground(null);
+		ImageLoader.getInstance().displayImage(null, preview);
 	}
 	
 	// 完成
 	public void onDone(View v) {
 		
-		DataHandle.getInstance().addPictureBook(pictureBook);
-		pictureBook = null;
+		DataHandle.getInstance().addPictureBook(temPictureBook);
+		temPictureBook = null;
 		finish();
 	}
 	
@@ -179,17 +186,20 @@ public class RecordActivity extends BaseActivity {
 			case REQUEST_CODE_PIC_LOCAL:// 得到本机图片
 				Uri selectedImage = data.getData();
 				if(selectedImage != null) {
+					tv_page.setText(pages + "");
 					doHandeLocalPic(selectedImage);
 				}
 				break;
 			case REQUEST_CODE_AUDIO_LOCAL:// 得到本机语音
 				if(resultCode == RESULT_OK) {
+					tv_page.setText(pages + "");
 					Uri uri = data.getData();
 				}
 				break;
 			
 			case REQUEST_CODE_AUDIO_RECORD:// 录制的声音
 				if(resultCode == RESULT_OK) {
+					tv_page.setText(pages + "");
 					Uri uri = data.getData();
 				}
 				break;
@@ -197,27 +207,37 @@ public class RecordActivity extends BaseActivity {
 		}
 	}
 	
+	/**
+	 * @方法名：doHandeLocalPic
+	 * @描述：处理得到本机图片
+	 * @param selectedImage
+	 * @输出：void
+	 */
 	private void doHandeLocalPic(Uri selectedImage) {
 		
 		try {
-			String localFilePath = Constants.PICTUREBOOK_PATH_MYBOOKS + "/" + System.currentTimeMillis() + ".jpeg";
+			String localFilePath = Constants.PICTUREBOOK_PATH_MYBOOKS + "/" + temPictureBook.getBookDir() + "/" + System.currentTimeMillis()
+					+ ".jpeg";
 			String realSelectedPath = CommonUtils.getRealPathFromURI(RecordActivity.this, selectedImage);
 			CompressPicUtil.compressImage(RecordActivity.this, realSelectedPath, localFilePath, 100);
 			preview.setBackground(null);
 			ImageLoader.getInstance().displayImage("file:///" + localFilePath, preview);
 			ContentValues value = new ContentValues();
 			value.put(Contract.BookContentContract._PATH_PIC, localFilePath);
-			if(bookContent.getPath_pic() == null) {
+			if(temBookContent.getPage() != pages) {
 				// 插入数据
+				temBookContent.setPage(pages);
 				value.put(Contract.BookContentContract._PAGE, pages);
-				value.put(Contract.BookContentContract._ID, bookContent.getId());
-				dbHelper.insert(Contract.BookContentContract._PATH_PIC, value);
+				value.put(Contract.BookContentContract._BOOK_ID, temBookContent.getBookId());
+				long row = dbHelper.insert(Contract.BookContentContract.TABLE_NAME, value);
+				temBookContent.setId((int)row);
 			}
 			else {
 				// 更新数据
-				dbHelper.update(Contract.BookContentContract.TABLE_NAME, bookContent.getId(), value);
+				dbHelper.update(Contract.BookContentContract.TABLE_NAME, temBookContent.getId(), value);
 			}
-			bookContent.setPath_pic(localFilePath);
+			temBookContent.setPath_pic(localFilePath);
+			temPictureBook.addBookContent(temBookContent);
 		}
 		catch(Exception e) {
 			// TODO Auto-generated catch block

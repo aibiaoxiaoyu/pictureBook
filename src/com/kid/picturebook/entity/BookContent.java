@@ -1,7 +1,17 @@
 package com.kid.picturebook.entity;
 
 public class BookContent {
-	private int id;// 绘本id
+	private int id;// id
+	private int bookId;// 绘本id
+	
+	public int getBookId() {
+		return bookId;
+	}
+	
+	public void setBookId(int bookId) {
+		this.bookId = bookId;
+	}
+	
 	private int page;// 该绘本的第几页
 	private String path_pic;// 某页的图片地址
 	private String path_audio;// 某页的语音地址

@@ -1,23 +1,25 @@
 package com.kid.picturebook.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PictureBook {
 	private int id;
 	
 	private String title;// 绘本名称
-	private String createTime;// 绘本创建日期
+	private long createTime;// 绘本创建日期
 	private List<BookContent> bookContentList;
 	
-	public PictureBook(String title) {
+	public PictureBook(String title, long time) {
 		this.title = title;
+		this.createTime = time;
 	}
 	
-	public String getCreateTime() {
+	public long getCreateTime() {
 		return createTime;
 	}
 	
-	public void setCreateTime(String createTime) {
+	public void setCreateTime(long createTime) {
 		this.createTime = createTime;
 	}
 	
@@ -33,12 +35,24 @@ public class PictureBook {
 		return bookContentList;
 	}
 	
+	public void addBookContent(BookContent bookContent) {
+		if(bookContentList == null) {
+			bookContentList = new ArrayList<BookContent>();
+		}
+		if(!bookContentList.contains(bookContent))
+			bookContentList.add(bookContent);
+	}
+	
 	public void setBookContentList(List<BookContent> bookContentList) {
 		this.bookContentList = bookContentList;
 	}
 	
 	public String getTitle() {
 		return title;
+	}
+	
+	public String getBookDir() {
+		return createTime + title;
 	}
 	
 	public void setTitle(String title) {
