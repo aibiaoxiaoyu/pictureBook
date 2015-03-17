@@ -6,11 +6,19 @@ public class PictureBook {
 	private int id;
 	
 	private String title;// 绘本名称
-	private String create_time;// 绘本创建日期
+	private String createTime;// 绘本创建日期
 	private List<BookContent> bookContentList;
 	
 	public PictureBook(String title) {
 		this.title = title;
+	}
+	
+	public String getCreateTime() {
+		return createTime;
+	}
+	
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
 	}
 	
 	public int getId() {
@@ -35,14 +43,6 @@ public class PictureBook {
 	
 	public void setTitle(String title) {
 		this.title = title;
-	}
-	
-	public String getCreate_time() {
-		return create_time;
-	}
-	
-	public void setCreate_time(String create_time) {
-		this.create_time = create_time;
 	}
 	
 	@Override

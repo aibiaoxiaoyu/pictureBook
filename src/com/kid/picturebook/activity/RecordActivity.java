@@ -70,7 +70,7 @@ public class RecordActivity extends BaseActivity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						// TODO Auto-generated method stub
-						String title = et.toString();
+						String title = et.getText().toString();
 						if(TextUtils.isEmpty(title)) {
 							title = "myPictureBook";
 						}
@@ -79,8 +79,9 @@ public class RecordActivity extends BaseActivity {
 						file.mkdirs();
 						pictureBook = new PictureBook(title);
 						ContentValues cv = new ContentValues();
-						cv.put(Contract.PictureBook._TITLE, title);
-						long row = dbHelper.insert(Contract.PictureBook.TABLE_NAME, cv);
+						cv.put(Contract.PictureBookContract._TITLE, title);
+						cv.put(Contract.PictureBookContract._CREATE_TIME, System.currentTimeMillis());
+						long row = dbHelper.insert(Contract.PictureBookContract.TABLE_NAME, cv);
 						pictureBook.setId((int)row);
 						bookContent.setId(pictureBook.getId());
 					}
@@ -205,16 +206,16 @@ public class RecordActivity extends BaseActivity {
 			preview.setBackground(null);
 			ImageLoader.getInstance().displayImage("file:///" + localFilePath, preview);
 			ContentValues value = new ContentValues();
-			value.put(Contract.BookContent._PATH_PIC, localFilePath);
+			value.put(Contract.BookContentContract._PATH_PIC, localFilePath);
 			if(bookContent.getPath_pic() == null) {
 				// 插入数据
-				value.put(Contract.BookContent._PAGE, pages);
-				value.put(Contract.BookContent._ID, bookContent.getId());
-				dbHelper.insert(Contract.BookContent._PATH_PIC, value);
+				value.put(Contract.BookContentContract._PAGE, pages);
+				value.put(Contract.BookContentContract._ID, bookContent.getId());
+				dbHelper.insert(Contract.BookContentContract._PATH_PIC, value);
 			}
 			else {
 				// 更新数据
-				dbHelper.update(Contract.BookContent.TABLE_NAME, bookContent.getId(), value);
+				dbHelper.update(Contract.BookContentContract.TABLE_NAME, bookContent.getId(), value);
 			}
 			bookContent.setPath_pic(localFilePath);
 		}

@@ -7,8 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.kid.picturebook.PictureBookApplication;
-import com.kid.picturebook.db.Contract.BookContent;
-import com.kid.picturebook.db.Contract.PictureBook;
+import com.kid.picturebook.db.Contract.BookContentContract;
+import com.kid.picturebook.db.Contract.PictureBookContract;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
@@ -24,12 +24,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		// 创建数据库
 		// TODO Auto-generated method stub
-		String sql = "Create table " + PictureBook.TABLE_NAME + "(" + PictureBook._ID + " integer primary key autoincrement, " + PictureBook._TITLE
-				+ " text );";
+		String sql = "Create table " + PictureBookContract.TABLE_NAME + "(" + PictureBookContract._ID + " integer primary key autoincrement, "
+				+ PictureBookContract._TITLE + " text, " + PictureBookContract._CREATE_TIME + " text );";
 		db.execSQL(sql);
-		sql = "Create table " + BookContent.TABLE_NAME + "(" + BookContent._ID + " integer primary key autoincrement, " + BookContent._DESCRIBE
-				+ " text, " + BookContent._BOOK_ID + " text, " + BookContent._PATH_AUDIO + " text," + BookContent._PATH_PIC + " text,"
-				+ BookContent._PAGE + " text );";
+		sql = "Create table " + BookContentContract.TABLE_NAME + "(" + BookContentContract._ID + " integer primary key autoincrement, "
+				+ BookContentContract._BOOK_ID + " text, " + BookContentContract._DESCRIBE + " text, " + BookContentContract._PATH_AUDIO + " text,"
+				+ BookContentContract._PATH_PIC + " text," + BookContentContract._PAGE + " text );";
 		db.execSQL(sql);
 		
 	}
@@ -38,7 +38,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO Auto-generated method stub
 		// 升级数据库
-		String sql = " DROP TABLE IF EXISTS " + PictureBook.TABLE_NAME;
+		String sql = " DROP TABLE IF EXISTS " + PictureBookContract.TABLE_NAME;
 		db.execSQL(sql);
 		onCreate(db);
 	}
@@ -51,7 +51,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public Cursor select() {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(PictureBook.TABLE_NAME, null, null, null, null, null, " _id desc");
+		Cursor cursor = db.query(PictureBookContract.TABLE_NAME, null, null, null, null, null, " _id desc");
 		return cursor;
 	}
 	
@@ -71,9 +71,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public void delete(int id) {
 		SQLiteDatabase db = this.getWritableDatabase();
-		String where = PictureBook._ID + "=?";
+		String where = PictureBookContract._ID + "=?";
 		String[] whereValue = {Integer.toString(id) };
-		db.delete(PictureBook.TABLE_NAME, where, whereValue);
+		db.delete(PictureBookContract.TABLE_NAME, where, whereValue);
 	}
 	
 	/**
