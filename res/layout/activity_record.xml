@@ -28,7 +28,7 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+id/btn_pic"
+            android:id="@+id/button1"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
             android:text="pic" />
 
         <Button
-            android:id="@+id/btn_audio"
+            android:id="@+id/button2"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,24 +45,22 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_done"
+        android:id="@+id/button4"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:background="@drawable/finish"
-        android:onClick="onDone"
-        android:visibility="gone" />
+        android:onClick="onDone" />
 
     <Button
-        android:id="@+id/btn_next"
+        android:id="@+id/button5"
         android:layout_width="100dp"
         android:layout_height="80dp"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@id/btn_done"
+        android:layout_toLeftOf="@id/button4"
         android:background="@drawable/next"
-        android:onClick="onNext"
-        android:visibility="gone" />
+        android:onClick="onNext" />
 
     <TextView
         android:id="@+id/tv_page"
@@ -71,15 +69,5 @@
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/button3"
         android:text="" />
-
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:text="我的绘本"
-        android:textSize="20sp" />
 
 </RelativeLayout>

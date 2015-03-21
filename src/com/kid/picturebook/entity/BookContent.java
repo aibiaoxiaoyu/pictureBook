@@ -4,16 +4,6 @@ public class BookContent {
 	private int id;// id
 	private int bookId;// 绘本id
 	
-	private int page = -1;// 该绘本的第几页
-	private String path_pic;// 某页的图片地址
-	private String path_audio;// 某页的语音地址
-	private String describe;// 某页的图片文字描述
-	
-	public BookContent(int bookId) {
-		super();
-		this.bookId = bookId;
-	}
-	
 	public int getBookId() {
 		return bookId;
 	}
@@ -21,6 +11,11 @@ public class BookContent {
 	public void setBookId(int bookId) {
 		this.bookId = bookId;
 	}
+	
+	private int page;// 该绘本的第几页
+	private String path_pic;// 某页的图片地址
+	private String path_audio;// 某页的语音地址
+	private String describe;// 某页的图片文字描述
 	
 	public int getId() {
 		return id;

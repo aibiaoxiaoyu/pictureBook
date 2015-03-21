@@ -25,8 +25,7 @@
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
             android:text="HELP"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="30sp" />
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
             android:id="@+id/textView2"
@@ -35,8 +34,7 @@
             android:layout_below="@id/textView1"
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
-            android:text="本绘本app（PictureBook）\n\n具有查看我的绘本、新建绘本功能，\n \n 其中绘本内容穿插了图片和语音， \n \n 支持点读."
-            android:textSize="18sp" />
+            android:text="可以查看我的绘本，以及新建绘本，包括图片和语音  \n 并且支持点读." />
 
         <RelativeLayout
             android:layout_width="match_parent"
