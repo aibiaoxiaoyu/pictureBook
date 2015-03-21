@@ -12,6 +12,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,11 +35,13 @@ public class RecordActivity extends BaseActivity {
 	private static final int REQUEST_CODE_AUDIO_RECORD = 101;
 	private static final int REQUEST_CODE_AUDIO_LOCAL = 102;
 	private ImageView preview;
-	private TextView tv_page;
+	private TextView tv_page;// 第几页
+	private TextView tv_title;// 标题
 	private DBHelper dbHelper;
 	private PictureBook temPictureBook;
-	private BookContent temBookContent = new BookContent();
+	private BookContent temBookContent;
 	private int pages = 0;
+	private Button btn_next, btn_done, btn_pic, btn_audio;
 	
 	// 继承BaseActivity，新打开页面时，默认执行父类中onCreate()方法，然后会依次执行initView()和initDate()
 	@Override
@@ -46,7 +49,13 @@ public class RecordActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 		setContentView(R.layout.activity_record);
 		tv_page = (TextView)findViewById(R.id.tv_page);
+		tv_title = (TextView)findViewById(R.id.tv_title);
 		preview = (ImageView)findViewById(R.id.preview);
+		
+		btn_next = (Button)findViewById(R.id.btn_next);
+		btn_done = (Button)findViewById(R.id.btn_done);
+		btn_pic = (Button)findViewById(R.id.btn_pic);
+		btn_audio = (Button)findViewById(R.id.btn_audio);
 	}
 	
 	@Override
@@ -67,7 +76,7 @@ public class RecordActivity extends BaseActivity {
 	// 输入绘本名字
 	private void showDialog() {
 		final EditText et = new EditText(this);
-		et.setHint("我的绘本名字");
+		et.setText("我的绘本");
 		new AlertDialog.Builder(this).setTitle("请输入绘本名字").setIcon(android.R.drawable.ic_dialog_info).setView(et)
 				.setPositiveButton("确定", new OnClickListener() {
 					
@@ -86,8 +95,11 @@ public class RecordActivity extends BaseActivity {
 						cv.put(Contract.PictureBookContract._TITLE, title);
 						cv.put(Contract.PictureBookContract._CREATE_TIME, temPictureBook.getCreateTime());
 						long row = dbHelper.insert(Contract.PictureBookContract.TABLE_NAME, cv);
+						if(temBookContent == null) {
+							temBookContent = new BookContent((int)row);
+						}
 						temPictureBook.setId((int)row);
-						temBookContent.setBookId(temPictureBook.getId());
+						tv_title.setText(title);
 					}
 				}).setNegativeButton("取消", new OnClickListener() {
 					
@@ -148,9 +160,15 @@ public class RecordActivity extends BaseActivity {
 	
 	// 下一页.
 	public void onNext(View v) {
+		if(temBookContent == null || (temBookContent.getPath_pic() == null && temBookContent.getPath_audio() == null)) {
+			showToast("请先输入语音或者图片信息");
+			return;
+		}
+		setControlView(View.VISIBLE);
+//		setMediaInputView(View.VISIBLE);
 		pages++;
-		temBookContent = new BookContent();
-		
+		temBookContent = new BookContent(temPictureBook.getId());
+		tv_page.setText("第" + (pages + 1) + "页");
 		preview.setBackground(null);
 		ImageLoader.getInstance().displayImage(null, preview);
 	}
@@ -161,6 +179,18 @@ public class RecordActivity extends BaseActivity {
 		DataHandle.getInstance().addPictureBook(temPictureBook);
 		temPictureBook = null;
 		finish();
+	}
+	
+	// 下一步和完成按钮隐藏
+	private void setControlView(int flag) {
+		btn_next.setVisibility(flag);
+		btn_done.setVisibility(flag);
+	}
+	
+	// 选择图片和语音按钮隐藏
+	private void setMediaInputView(int flag) {
+//		btn_pic.setVisibility(flag);
+//		btn_audio.setVisibility(flag);
 	}
 	
 	// 打开相册，选择图片
@@ -186,20 +216,26 @@ public class RecordActivity extends BaseActivity {
 			case REQUEST_CODE_PIC_LOCAL:// 得到本机图片
 				Uri selectedImage = data.getData();
 				if(selectedImage != null) {
-					tv_page.setText(pages + "");
+					tv_page.setText("第" + (pages + 1) + "页");
+					setControlView(View.VISIBLE);
+//					setMediaInputView(View.INVISIBLE);
 					doHandeLocalPic(selectedImage);
 				}
 				break;
 			case REQUEST_CODE_AUDIO_LOCAL:// 得到本机语音
 				if(resultCode == RESULT_OK) {
-					tv_page.setText(pages + "");
+					setControlView(View.VISIBLE);
+//					setMediaInputView(View.INVISIBLE);
+					tv_page.setText("第" + (pages + 1) + "页");
 					Uri uri = data.getData();
 				}
 				break;
 			
 			case REQUEST_CODE_AUDIO_RECORD:// 录制的声音
 				if(resultCode == RESULT_OK) {
-					tv_page.setText(pages + "");
+					setControlView(View.VISIBLE);
+//					setMediaInputView(View.INVISIBLE);
+					tv_page.setText("第" + (pages + 1) + "页");
 					Uri uri = data.getData();
 				}
 				break;
