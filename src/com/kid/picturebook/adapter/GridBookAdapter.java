@@ -57,14 +57,17 @@ public class GridBookAdapter extends BaseAdapter {
 		ImageView img = (ImageView)(convertView.findViewById(R.id.book_img));
 		TextView text = (TextView)(convertView.findViewById(R.id.book_name));
 		text.setText(picbook.getTitle());
+		if(picbook.getId() == -1) {
+			img.setBackgroundResource(R.drawable.exp);
+			return convertView;
+		}
 		List<BookContent> mList = picbook.getBookContentList();
 		if(mList != null && mList.size() > 0) {
 			if(mList.get(0).getPath_pic() == null) {
 				img.setBackgroundResource(R.drawable.input_book);
-				
 			}
 			else {
-				
+				img.setBackground(null);
 				img.setImageBitmap(getLoacalBitmap(mList.get(0).getPath_pic()));
 			}
 		}

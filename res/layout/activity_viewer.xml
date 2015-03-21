@@ -7,7 +7,7 @@
         android:id="@+id/img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/bg" />
+        android:background="@drawable/bg" />
 
     <Button
         android:id="@+id/button1"
@@ -15,5 +15,43 @@
         android:layout_height="80dp"
         android:background="@drawable/home"
         android:onClick="onHome" />
+
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/view_next"
+        android:onClick="onNext"
+        android:text="下一页" />
+
+    <TextView
+        android:id="@+id/view_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:text="1" />
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/play"
+        android:onClick="onPlay"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/pause"
+        android:onClick="onPause" />
 
 </RelativeLayout>

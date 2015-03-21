@@ -9,7 +9,7 @@
         android:id="@+id/book_img"
         android:layout_width="150dp"
         android:layout_height="130dp"
-        android:src="@drawable/input_book" />
+        android:background="@drawable/input_book" />
 
     <TextView
         android:id="@+id/book_name"

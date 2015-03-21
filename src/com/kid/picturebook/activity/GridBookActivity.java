@@ -17,6 +17,7 @@ import com.kid.picturebook.adapter.GridBookAdapter;
 import com.kid.picturebook.dealdate.DataHandle;
 import com.kid.picturebook.entity.PictureBook;
 
+// 我的绘本界面
 public class GridBookActivity extends BaseActivity {
 	private GridView gridView;
 	private GridBookAdapter adapter;
@@ -44,6 +45,9 @@ public class GridBookActivity extends BaseActivity {
 			PictureBook value = e.getValue();
 			lstImageItem.add(value);
 		}
+		PictureBook exp = new PictureBook("示例", 0);
+		exp.setId(-1);
+		lstImageItem.add(0, exp);
 		adapter = new GridBookAdapter(GridBookActivity.this, lstImageItem);
 		gridView.setAdapter(adapter);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
