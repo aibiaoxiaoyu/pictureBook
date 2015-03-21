@@ -79,6 +79,8 @@ public class ViewerActivity extends BaseActivity {
 		if(bookId == -1) {
 			if(page >= exps.length) {
 				showToast("已达到最后一页");
+				btn_play.setVisibility(View.GONE);
+				btn_pause.setVisibility(View.GONE);
 				findViewById(R.id.btn_next).setVisibility(View.GONE);
 				return;
 			}
@@ -89,6 +91,8 @@ public class ViewerActivity extends BaseActivity {
 		mList = book.getBookContentList();
 		if(mList != null && mList.size() > 0) {
 			if(page > mList.size()) {
+				btn_play.setVisibility(View.GONE);
+				btn_pause.setVisibility(View.GONE);
 				showToast("已达到最后一页");
 			}
 			

@@ -54,4 +54,12 @@
         android:background="@drawable/pause"
         android:onClick="onPause" />
 
+    <Button
+        android:id="@+id/btn_previous"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:text="上一页" />
+
 </RelativeLayout>
