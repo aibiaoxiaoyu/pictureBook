@@ -49,9 +49,15 @@ public class DBHelper extends SQLiteOpenHelper {
 		return dbHelper;
 	}
 	
-	public Cursor select() {
+	public Cursor select(String tableName) {
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.query(PictureBookContract.TABLE_NAME, null, null, null, null, null, " _id desc");
+		Cursor cursor = db.query(tableName, null, null, null, null, null, " _id desc");
+		return cursor;
+	}
+	
+	public Cursor select(String tableName, int bookId) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(tableName, null, "_id=?", new String[] {bookId + "" }, null, null, " _id desc");
 		return cursor;
 	}
 	

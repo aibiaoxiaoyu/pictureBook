@@ -4,6 +4,7 @@ import com.kid.picturebook.R;
 import com.kid.picturebook.R.id;
 import com.kid.picturebook.R.layout;
 import com.kid.picturebook.R.menu;
+import com.kid.picturebook.dealdate.DataHandle;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -45,6 +46,7 @@ public class FlashActivity extends BaseActivity {
 	@Override
 	public void initDate() {
 		// TODO Auto-generated method stub
+		DataHandle.getInstance().initAllPictureBooks();
 		
 	}
 	
