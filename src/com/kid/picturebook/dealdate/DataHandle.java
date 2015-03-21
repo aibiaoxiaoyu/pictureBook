@@ -62,6 +62,13 @@ public class DataHandle {
 		
 	}
 	
+	public Map<Integer, PictureBook> getAllBooks() {
+		if(mMapPictureBook == null) {
+			initAllPictureBooks();
+		}
+		return mMapPictureBook;
+	}
+	
 	public PictureBook getPictureBookByBookId(int id) {
 		return mMapPictureBook.get(id);
 	}
@@ -73,8 +80,9 @@ public class DataHandle {
 	public void addPictureBook(PictureBook pictureBook) {
 		if(mMapPictureBook == null) {
 			mMapPictureBook = new HashMap<Integer, PictureBook>();
-			if(!mMapPictureBook.containsKey(pictureBook))
-				mMapPictureBook.put(pictureBook.getId(), pictureBook);
 		}
+		if(!mMapPictureBook.containsKey(pictureBook))
+			mMapPictureBook.put(pictureBook.getId(), pictureBook);
+		
 	}
 }

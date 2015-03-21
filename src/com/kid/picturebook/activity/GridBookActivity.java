@@ -2,6 +2,9 @@ package com.kid.picturebook.activity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.content.Intent;
 import android.view.View;
@@ -11,6 +14,8 @@ import android.widget.GridView;
 
 import com.kid.picturebook.R;
 import com.kid.picturebook.adapter.GridBookAdapter;
+import com.kid.picturebook.dealdate.DataHandle;
+import com.kid.picturebook.entity.PictureBook;
 
 public class GridBookActivity extends BaseActivity {
 	private GridView gridView;
@@ -31,23 +36,24 @@ public class GridBookActivity extends BaseActivity {
 	public void initDate() {
 		// TODO Auto-generated method stub
 		// 生成动态数组，并且转入数据
-		ArrayList<HashMap<String, Object>> lstImageItem = new ArrayList<HashMap<String, Object>>();
-		for(int i = 0; i < 2; i++) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put(ITEMIMAGE, R.drawable.input_book);// 添加图像资源的ID
-			map.put(ITEMNAME, "NO." + String.valueOf(i));// 按序号做ItemText
-			lstImageItem.add(map);
+		final ArrayList<PictureBook> lstImageItem = new ArrayList<PictureBook>();
+		Map<Integer, PictureBook> mMapPictureBook = DataHandle.getInstance().getAllBooks();
+		Iterator<Entry<Integer, PictureBook>> entryKeyIterator = mMapPictureBook.entrySet().iterator();
+		while(entryKeyIterator.hasNext()) {
+			Entry<Integer, PictureBook> e = entryKeyIterator.next();
+			PictureBook value = e.getValue();
+			lstImageItem.add(value);
 		}
-		
-		adapter = new GridBookAdapter(GridBookActivity.this, lstImageItem, R.layout.item_book, new String[] {ITEMIMAGE, ITEMNAME }, new int[] {
-				R.id.book_img, R.id.book_name });
+		adapter = new GridBookAdapter(GridBookActivity.this, lstImageItem);
 		gridView.setAdapter(adapter);
 		gridView.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
-				startActivity(new Intent(GridBookActivity.this, ViewerActivity.class));
+				Intent intent = new Intent(GridBookActivity.this, ViewerActivity.class);
+				intent.putExtra("bookId", lstImageItem.get(position).getId());
+				startActivity(intent);
 			}
 		});
 		

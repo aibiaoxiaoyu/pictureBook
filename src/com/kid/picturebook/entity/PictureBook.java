@@ -1,9 +1,10 @@
 package com.kid.picturebook.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PictureBook {
+public class PictureBook implements Serializable {
 	private int id;
 	
 	private String title;// »æ±¾Ãû³Æ
