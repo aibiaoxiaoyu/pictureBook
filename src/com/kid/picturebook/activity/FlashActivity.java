@@ -5,6 +5,8 @@ import com.kid.picturebook.R.id;
 import com.kid.picturebook.R.layout;
 import com.kid.picturebook.R.menu;
 import com.kid.picturebook.dealdate.DataHandle;
+import com.kid.picturebook.utils.CommonUtils;
+import com.kid.picturebook.utils.Constants;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -47,6 +49,7 @@ public class FlashActivity extends BaseActivity {
 	public void initDate() {
 		// TODO Auto-generated method stub
 		DataHandle.getInstance().initAllPictureBooks();
+		CommonUtils.copyResToSdcard(FlashActivity.this);
 		
 	}
 	

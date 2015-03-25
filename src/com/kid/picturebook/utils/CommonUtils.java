@@ -1,6 +1,12 @@
 package com.kid.picturebook.utils;
 
-import com.kid.picturebook.PictureBookApplication;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.lang.reflect.Field;
+
+import com.kid.picturebook.R;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -33,5 +39,32 @@ public class CommonUtils {
 			cursor.close();
 		}
 		return res;
+	}
+	
+	// 把APK的资源文件copy到SD卡下的实现。 /*
+	// * 将raw里的文件copy到sd卡下
+	// * */
+	public static void copyResToSdcard(Context context) {
+		Field[] raw = R.raw.class.getFields();
+		for(Field r : raw) {
+			try {
+				int id = context.getResources().getIdentifier(r.getName(), "raw", context.getPackageName());
+				String path = Constants.PICTUREBOOK_PATH + "/" + r.getName() + ".mp3";
+				BufferedOutputStream bufEcrivain = new BufferedOutputStream((new FileOutputStream(new File(path))));
+				BufferedInputStream VideoReader = new BufferedInputStream(context.getResources().openRawResource(id));
+				byte[] buff = new byte[20 * 1024];
+				int len;
+				while((len = VideoReader.read(buff)) > 0) {
+					bufEcrivain.write(buff, 0, len);
+				}
+				bufEcrivain.flush();
+				bufEcrivain.close();
+				VideoReader.close();
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 }

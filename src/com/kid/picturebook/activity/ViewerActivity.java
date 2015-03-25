@@ -17,25 +17,32 @@ import com.kid.picturebook.R;
 import com.kid.picturebook.dealdate.DataHandle;
 import com.kid.picturebook.entity.BookContent;
 import com.kid.picturebook.entity.PictureBook;
+import com.kid.picturebook.utils.Constants;
+import com.kid.picturebook.utils.VoiceRecorder;
+import com.kid.picturebook.utils.VoiceRecorder.MediaPlayerCallback;
 
 public class ViewerActivity extends BaseActivity {
 	private ImageView img;
 	private int[] exps = new int[] {R.drawable.exp1, R.drawable.exp2, R.drawable.exp3 };
+	private String[] expPaths;
 	private int bookId, page = 0;
 	private PictureBook book;
 	private List<BookContent> mList;
 	private TextView view_page;
 	private Button btn_play, btn_pause;
 	private boolean isAutoPlay = true;
-	Handler mHandler = new Handler();
-	Runnable runnable = new Runnable() {
+	private VoiceRecorder voiceRecorder;
+	private static final int DELAYTIME = 10000;
+	private Handler mHandler = new Handler();
+	private Runnable runnable = new Runnable() {
 		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			boolean isEnd = showPage(++page);
 			if(!isEnd) {
-				mHandler.postDelayed(runnable, 3000);
+				// 自动循环播放
+				mHandler.postDelayed(runnable, DELAYTIME);
 			}
 			else {
 				mHandler.removeCallbacks(runnable);
@@ -60,10 +67,11 @@ public class ViewerActivity extends BaseActivity {
 		Intent intent = getIntent();
 		bookId = intent.getIntExtra("bookId", -1);
 		findViewById(R.id.btn_previous).setVisibility(View.GONE);
-		
+		voiceRecorder = new VoiceRecorder(ViewerActivity.this, null);
+		expPaths = new String[] {Constants.PICTUREBOOK_PATH + "/exp1.mp3", Constants.PICTUREBOOK_PATH + "/exp2.mp3",
+				Constants.PICTUREBOOK_PATH + "/exp3.mp3" };
 		showPage(page);
-		
-		mHandler.postDelayed(runnable, 3000);
+		mHandler.postDelayed(runnable, DELAYTIME);
 	}
 	
 	/**
@@ -73,8 +81,23 @@ public class ViewerActivity extends BaseActivity {
 	 * @输出：void
 	 */
 	public void onHome(View v) {
+		if(voiceRecorder != null & voiceRecorder.isPlaying) {
+			voiceRecorder.stopPlayVoice();
+		}
+		mHandler.removeCallbacks(runnable);
 		startActivity(new Intent(ViewerActivity.this, HomeActivity.class));
 		finish();
+	}
+	
+	/**
+	 * @方法名：setOnClicked
+	 * @描述：点读功能
+	 * @param v
+	 * @输出：void
+	 * @作者：caizhibiao
+	 */
+	public void setOnClicked(View v) {
+		showPage(page);
 	}
 	
 	// 显示下一页
@@ -98,7 +121,7 @@ public class ViewerActivity extends BaseActivity {
 			btn_play.setVisibility(View.GONE);
 			btn_pause.setVisibility(View.VISIBLE);
 			mHandler.removeCallbacks(runnable);
-			mHandler.postDelayed(runnable, 3000);
+			mHandler.postDelayed(runnable, DELAYTIME);
 		}
 		else {
 			btn_play.setVisibility(View.VISIBLE);
@@ -115,7 +138,7 @@ public class ViewerActivity extends BaseActivity {
 		showToast("切换至自动播放");
 		btn_pause.setVisibility(View.VISIBLE);
 		btn_play.setVisibility(View.GONE);
-		mHandler.postDelayed(runnable, 3000);
+		mHandler.postDelayed(runnable, DELAYTIME);
 	}
 	
 	// 点击暂停，手动播放
@@ -148,8 +171,26 @@ public class ViewerActivity extends BaseActivity {
 			
 			view_page.setText((page + 1) + "");
 			img.setBackgroundResource(exps[page]);
+			if(voiceRecorder.isPlaying) {
+				voiceRecorder.stopPlayVoice();
+			}
+			voiceRecorder.playVoice(expPaths[page], new MediaPlayerCallback() {
+				
+				@Override
+				public void onStop() {
+					// TODO Auto-generated method stub
+					// 播放停止
+				}
+				
+				@Override
+				public void onStart() {
+					// TODO Auto-generated method stub
+					// 播放开始
+				}
+			});
 			return false;
 		}
+		// 查找数据，进行显示
 		book = DataHandle.getInstance().getPictureBookByBookId(bookId);
 		mList = book.getBookContentList();
 		if(mList != null && mList.size() > 0) {
@@ -193,6 +234,15 @@ public class ViewerActivity extends BaseActivity {
 		catch(FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		if(voiceRecorder != null & voiceRecorder.isPlaying) {
+			voiceRecorder.stopPlayVoice();
 		}
 	}
 }
