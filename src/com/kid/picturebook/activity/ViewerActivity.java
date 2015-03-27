@@ -81,12 +81,16 @@ public class ViewerActivity extends BaseActivity {
 	 * @Êä³ö£ºvoid
 	 */
 	public void onHome(View v) {
-		if(voiceRecorder != null & voiceRecorder.isPlaying) {
+		stopPlay();
+		startActivity(new Intent(ViewerActivity.this, HomeActivity.class));
+		finish();
+	}
+	
+	private void stopPlay() {
+		if(voiceRecorder != null && voiceRecorder.isPlaying) {
 			voiceRecorder.stopPlayVoice();
 		}
 		mHandler.removeCallbacks(runnable);
-		startActivity(new Intent(ViewerActivity.this, HomeActivity.class));
-		finish();
 	}
 	
 	/**
@@ -241,8 +245,6 @@ public class ViewerActivity extends BaseActivity {
 	protected void onStop() {
 		// TODO Auto-generated method stub
 		super.onStop();
-		if(voiceRecorder != null & voiceRecorder.isPlaying) {
-			voiceRecorder.stopPlayVoice();
-		}
+		stopPlay();
 	}
 }

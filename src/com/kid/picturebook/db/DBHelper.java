@@ -82,6 +82,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.delete(PictureBookContract.TABLE_NAME, where, whereValue);
 	}
 	
+	public void delete(String tableName, int id) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String where = " _id =?";
+		String[] whereValue = {Integer.toString(id) };
+		db.delete(tableName, where, whereValue);
+	}
+	
 	/**
 	 * @方法名：update
 	 * @描述：更新数据库
