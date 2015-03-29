@@ -43,6 +43,13 @@ public class PictureBook implements Serializable {
 		if(!bookContentList.contains(bookContent))
 			bookContentList.add(bookContent);
 	}
+	public void addBookContent(int index,BookContent bookContent) {
+		if(bookContentList == null) {
+			bookContentList = new ArrayList<BookContent>();
+		}
+		if(!bookContentList.contains(bookContent))
+			bookContentList.add(index,bookContent);
+	}
 	
 	public void setBookContentList(List<BookContent> bookContentList) {
 		this.bookContentList = bookContentList;

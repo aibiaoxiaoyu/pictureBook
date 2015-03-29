@@ -21,6 +21,7 @@
         android:onClick="onBack" />
 
     <LinearLayout
+        android:id="@+id/ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -66,14 +67,6 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/tv_page"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/button3"
-        android:text="" />
-
-    <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,5 +75,25 @@
         android:layout_marginTop="10dp"
         android:text="我的绘本"
         android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/path_audio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:maxLines="2"
+        android:ellipsize="start"
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentBottom="true"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/tv_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text=""
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true" />
 
 </RelativeLayout>

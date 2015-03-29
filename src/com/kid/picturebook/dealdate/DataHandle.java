@@ -55,7 +55,7 @@ public class DataHandle {
 					bookContent.setPath_pic(cursor.getString(cursor.getColumnIndex(BookContentContract._PATH_PIC)));
 					bookContent.setPath_audio(cursor.getString(cursor.getColumnIndex(BookContentContract._PATH_AUDIO)));
 					bookContent.setId(cursor.getInt(cursor.getColumnIndex(BookContentContract._ID)));
-					mMapPictureBook.get(bookContent.getBookId()).addBookContent(bookContent);
+					mMapPictureBook.get(bookContent.getBookId()).addBookContent(0,bookContent);
 				}
 			}
 		}

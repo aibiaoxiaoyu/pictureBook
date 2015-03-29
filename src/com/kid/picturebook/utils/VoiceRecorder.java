@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class VoiceRecorder {
@@ -138,7 +139,7 @@ public class VoiceRecorder {
 	}
 	
 	public void playVoice(String filePath, MediaPlayerCallback callback) {
-		if(!(new File(filePath).exists())) {
+		if(TextUtils.isEmpty(filePath)||!(new File(filePath).exists())) {
 			Log.d("IM", "not exits");
 			return;
 		}
@@ -174,7 +175,9 @@ public class VoiceRecorder {
 				@Override
 				public void onCompletion(MediaPlayer mp) {
 					// TODO Auto-generated method stub
-					mMediaPlayerCallback.onStop();
+					if(mMediaPlayerCallback!=null){
+						mMediaPlayerCallback.onStop();
+					}
 					stopPlayVoice(); // stop animation
 				}
 				
@@ -183,7 +186,9 @@ public class VoiceRecorder {
 			playSource = filePath;
 			currentPlayListener = this;
 			mediaPlayer.start();
-			mMediaPlayerCallback.onStart();
+			if(mMediaPlayerCallback!=null){
+				mMediaPlayerCallback.onStart();
+			}
 		}
 		catch(Exception e) {
 			Log.d("IM", e.toString());
@@ -196,7 +201,9 @@ public class VoiceRecorder {
 			mediaPlayer.stop();
 			mediaPlayer.release();
 			mediaPlayer = null;
-			mMediaPlayerCallback.onStop();
+			if(mMediaPlayerCallback!=null){
+				mMediaPlayerCallback.onStop();
+			}
 		}
 		isPlaying = false;
 	}

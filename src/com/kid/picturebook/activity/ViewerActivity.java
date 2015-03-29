@@ -17,25 +17,26 @@ import com.kid.picturebook.R;
 import com.kid.picturebook.dealdate.DataHandle;
 import com.kid.picturebook.entity.BookContent;
 import com.kid.picturebook.entity.PictureBook;
+import com.kid.picturebook.utils.CommonUtils;
 import com.kid.picturebook.utils.Constants;
 import com.kid.picturebook.utils.VoiceRecorder;
 import com.kid.picturebook.utils.VoiceRecorder.MediaPlayerCallback;
 
 public class ViewerActivity extends BaseActivity {
-	private ImageView img;
-	private int[] exps = new int[] {R.drawable.exp1, R.drawable.exp2, R.drawable.exp3 };
-	private String[] expPaths;
+	private static final int[] exps = new int[] {R.drawable.exp1, R.drawable.exp2, R.drawable.exp3 };
+	private static final String[] expPaths=new String[] {Constants.PICTUREBOOK_PATH + "/exp1.mp3", Constants.PICTUREBOOK_PATH + "/exp2.mp3",
+			Constants.PICTUREBOOK_PATH + "/exp3.mp3" };;
+    private static final int DELAYTIME = 10000;
 	private int bookId, page = 0;
 	private PictureBook book;
 	private List<BookContent> mList;
+	private ImageView img;
 	private TextView view_page;
 	private Button btn_play, btn_pause;
-	private boolean isAutoPlay = true;
 	private VoiceRecorder voiceRecorder;
-	private static final int DELAYTIME = 10000;
+	private boolean isAutoPlay = true;
 	private Handler mHandler = new Handler();
 	private Runnable runnable = new Runnable() {
-		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
@@ -45,8 +46,8 @@ public class ViewerActivity extends BaseActivity {
 				mHandler.postDelayed(runnable, DELAYTIME);
 			}
 			else {
+				//取消循环
 				mHandler.removeCallbacks(runnable);
-				
 			}
 		}
 	};
@@ -68,24 +69,22 @@ public class ViewerActivity extends BaseActivity {
 		bookId = intent.getIntExtra("bookId", -1);
 		findViewById(R.id.btn_previous).setVisibility(View.GONE);
 		voiceRecorder = new VoiceRecorder(ViewerActivity.this, null);
-		expPaths = new String[] {Constants.PICTUREBOOK_PATH + "/exp1.mp3", Constants.PICTUREBOOK_PATH + "/exp2.mp3",
-				Constants.PICTUREBOOK_PATH + "/exp3.mp3" };
-		showPage(page);
-		mHandler.postDelayed(runnable, DELAYTIME);
+		book = DataHandle.getInstance().getPictureBookByBookId(bookId);	// 查找数据
+		if(book!=null){
+			mList = book.getBookContentList();
+		}
+		showPage(page);//显示第一页
+		mHandler.postDelayed(runnable, DELAYTIME);//自动播放
 	}
 	
-	/**
-	 * @方法名：onHome
-	 * @描述：回到主界面
-	 * @param v
-	 * @输出：void
-	 */
+	//回到主界面
 	public void onHome(View v) {
-		stopPlay();
+		stopPlay();//停止播放
 		startActivity(new Intent(ViewerActivity.this, HomeActivity.class));
 		finish();
 	}
 	
+	//停止播放
 	private void stopPlay() {
 		if(voiceRecorder != null && voiceRecorder.isPlaying) {
 			voiceRecorder.stopPlayVoice();
@@ -93,13 +92,7 @@ public class ViewerActivity extends BaseActivity {
 		mHandler.removeCallbacks(runnable);
 	}
 	
-	/**
-	 * @方法名：setOnClicked
-	 * @描述：点读功能
-	 * @param v
-	 * @输出：void
-	 * @作者：caizhibiao
-	 */
+	 //点读功能
 	public void setOnClicked(View v) {
 		showPage(page);
 	}
@@ -153,92 +146,76 @@ public class ViewerActivity extends BaseActivity {
 		btn_pause.setVisibility(View.GONE);
 		mHandler.removeCallbacks(runnable);
 	}
-	
+	//显示某页
 	private boolean showPage(int page) {
 		if(page < 0) {
-			showToast("已达到第一页");
-			this.page = 0;
-			findViewById(R.id.btn_next).setVisibility(View.VISIBLE);
-			findViewById(R.id.btn_previous).setVisibility(View.GONE);
+			setViewWhenFirstOne();// 当点击上一页到第一页时，对布局进行设置
 			return true;
 		}
 		if(bookId == -1) {
-			if(page >= exps.length) {
-				showToast("已达到最后一页");
-				this.page--;
-				btn_play.setVisibility(View.GONE);
-				btn_pause.setVisibility(View.GONE);
-				findViewById(R.id.btn_previous).setVisibility(View.VISIBLE);
-				findViewById(R.id.btn_next).setVisibility(View.GONE);
-				return true;
-			}
-			
-			view_page.setText((page + 1) + "");
-			img.setBackgroundResource(exps[page]);
-			if(voiceRecorder.isPlaying) {
-				voiceRecorder.stopPlayVoice();
-			}
-			voiceRecorder.playVoice(expPaths[page], new MediaPlayerCallback() {
-				
-				@Override
-				public void onStop() {
-					// TODO Auto-generated method stub
-					// 播放停止
-				}
-				
-				@Override
-				public void onStart() {
-					// TODO Auto-generated method stub
-					// 播放开始
-				}
-			});
-			return false;
+			return showExamplePage(page);//显示示例图片
 		}
-		// 查找数据，进行显示
-		book = DataHandle.getInstance().getPictureBookByBookId(bookId);
-		mList = book.getBookContentList();
-		if(mList != null && mList.size() > 0) {
-			if(page > mList.size()) {
-				btn_play.setVisibility(View.GONE);
-				btn_pause.setVisibility(View.GONE);
-				showToast("已达到最后一页");
-				this.page--;
-				return true;
-			}
-			
-			if(mList.get(0).getPath_pic() == null) {
-				img.setBackgroundResource(R.drawable.input_book);
-				
-			}
-			else {
-				
-				img.setImageBitmap(getLoacalBitmap(mList.get(page).getPath_pic()));
-			}
-		}
-		else {
-			img.setBackgroundResource(R.drawable.input_book);
-			
-		}
+		showLocalPage(page);//显示我自己录入的绘本
 		view_page.setText((page + 1) + "");
 		return false;
 	}
 	
-	/**
-	 * 加载本地图片
-	 * 
-	 * @param url
-	 * @return
-	 */
-	public static Bitmap getLoacalBitmap(String url) {
-		try {
-			FileInputStream fis = new FileInputStream(url);
-			return BitmapFactory.decodeStream(fis); // /把流转化为Bitmap图片
-			
+	//显示我自己录入的绘本
+	private boolean showLocalPage(int page) {
+		if(mList != null && mList.size() > 0) {
+			int size = mList.size();
+			if(page >= size) {
+				setViewWhenLastOne(); // 当显示到最后一页时，对布局进行设置
+				return true;
+			}
+			if(mList.get(0).getPath_pic() == null) {
+				img.setBackgroundResource(R.drawable.input_book);//默认图片
+			}
+			else {
+				img.setImageBitmap(CommonUtils.getLoacalBitmap(mList.get(page).getPath_pic()));
+			}
+			if(voiceRecorder.isPlaying) {
+				voiceRecorder.stopPlayVoice();
+			}
+			voiceRecorder.playVoice(mList.get(page).getPath_audio(),null);
 		}
-		catch(FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
+		else {
+			img.setBackgroundResource(R.drawable.input_book);//默认图片
 		}
+		return false;
+	}
+
+	//显示例子图片
+	private boolean showExamplePage(int page) {
+		if(page >= exps.length) {
+			setViewWhenLastOne();
+			return true;
+		}
+		view_page.setText((page + 1) + "");
+		img.setBackgroundResource(exps[page]);
+		if(voiceRecorder.isPlaying) {
+			voiceRecorder.stopPlayVoice();
+		}
+		voiceRecorder.playVoice(expPaths[page],null);
+		return false;
+	}
+	
+	// 当显示到最后一页时，对布局进行设置
+	private void setViewWhenLastOne() {
+		btn_play.setVisibility(View.GONE);
+		btn_pause.setVisibility(View.GONE);
+		findViewById(R.id.btn_previous).setVisibility(View.VISIBLE);
+		findViewById(R.id.btn_next).setVisibility(View.GONE);
+		showToast("已达到最后一页");
+		this.page--;
+	}
+	
+	// 当点击上一页到第一页时，对布局进行设置
+	private void setViewWhenFirstOne() {
+		showToast("已达到第一页");
+		this.page = 0;
+		findViewById(R.id.btn_next).setVisibility(View.VISIBLE);
+		findViewById(R.id.btn_previous).setVisibility(View.GONE);
 	}
 	
 	@Override

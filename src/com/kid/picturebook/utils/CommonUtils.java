@@ -3,6 +3,8 @@ package com.kid.picturebook.utils;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 
@@ -10,6 +12,8 @@ import com.kid.picturebook.R;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -39,6 +43,23 @@ public class CommonUtils {
 			cursor.close();
 		}
 		return res;
+	}
+	/**
+	 * 加载本地图片
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public static Bitmap getLoacalBitmap(String url) {
+		try {
+			FileInputStream fis = new FileInputStream(url);
+			return BitmapFactory.decodeStream(fis); // /把流转化为Bitmap图片
+			
+		}
+		catch(FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	// 把APK的资源文件copy到SD卡下的实现。 /*

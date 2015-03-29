@@ -8,7 +8,7 @@
         android:onClick="setOnClicked"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg" />
+         />
 
     <Button
         android:id="@+id/button1"
@@ -35,7 +35,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dp"
         android:text="1"
-        android:textColor="#ffffff" />
+        android:textColor="#000000" />
 
     <Button
         android:id="@+id/play"

@@ -35,6 +35,7 @@ public class RecordActivity extends BaseActivity {
 	private static final int REQUEST_CODE_AUDIO_RECORD = 101;
 	private static final int REQUEST_CODE_AUDIO_LOCAL = 102;
 	private ImageView preview;
+	private TextView path_audio;
 	private TextView tv_page;// 第几页
 	private TextView tv_title;// 标题
 	private DBHelper dbHelper;
@@ -50,11 +51,13 @@ public class RecordActivity extends BaseActivity {
 		setContentView(R.layout.activity_record);
 		tv_page = (TextView)findViewById(R.id.tv_page);
 		tv_title = (TextView)findViewById(R.id.tv_title);
+		path_audio = (TextView)findViewById(R.id.path_audio);
 		preview = (ImageView)findViewById(R.id.preview);
 		btn_next = (Button)findViewById(R.id.btn_next);
 		btn_done = (Button)findViewById(R.id.btn_done);
 		btn_pic = (Button)findViewById(R.id.btn_pic);
 		btn_audio = (Button)findViewById(R.id.btn_audio);
+		btn_audio.setVisibility(View.INVISIBLE);
 	}
 	
 	@Override
@@ -85,6 +88,9 @@ public class RecordActivity extends BaseActivity {
 						}
 					}).setNegativeButton("取消", null).show();
 		}
+		else {
+			onDone(v);
+		}
 	}
 	
 	@Override
@@ -97,6 +103,7 @@ public class RecordActivity extends BaseActivity {
 				Uri selectedImage = data.getData();
 				if(selectedImage != null) {
 					tv_page.setText("第" + (pages + 1) + "页");
+					btn_audio.setVisibility(View.VISIBLE);
 					setControlView(View.VISIBLE);
 					// setMediaInputView(View.INVISIBLE);
 					doHandeLocalPic(selectedImage);
@@ -108,6 +115,7 @@ public class RecordActivity extends BaseActivity {
 					// setMediaInputView(View.INVISIBLE);
 					tv_page.setText("第" + (pages + 1) + "页");
 					Uri uri = data.getData();
+					doHandeAudio(uri);
 				}
 				break;
 			
@@ -117,6 +125,7 @@ public class RecordActivity extends BaseActivity {
 					// setMediaInputView(View.INVISIBLE);
 					tv_page.setText("第" + (pages + 1) + "页");
 					Uri uri = data.getData();
+					doHandeAudio(uri);
 				}
 				break;
 		
@@ -145,8 +154,7 @@ public class RecordActivity extends BaseActivity {
 				}).show();
 	}
 	
-	
-	//插入绘本标题、时间到数据库
+	// 插入绘本标题、时间到数据库
 	private void doInsertTitle(String title) {
 		if(TextUtils.isEmpty(title)) {
 			title = "myPictureBook";
@@ -188,8 +196,20 @@ public class RecordActivity extends BaseActivity {
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
 				if(which == 0) {// 打开录音机，
-					Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-					startActivityForResult(intent, REQUEST_CODE_AUDIO_RECORD);
+					try {
+						Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+						startActivityForResult(intent, REQUEST_CODE_AUDIO_RECORD);
+//						Intent intentFromRecord=new Intent();
+//						 intentFromRecord.setType("audio/*");
+//						 intentFromRecord.setAction(Intent.ACTION_GET_CONTENT);
+//						 intentFromRecord.putExtra("return-data", true); 
+//						 startActivityForResult(intentFromRecord,REQUEST_CODE_AUDIO_RECORD); 
+					}
+					catch(Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+						showToast("打开系统录音机出错");
+					}
 				}
 				else {// 打开文件选择
 					showFileChooser();
@@ -224,16 +244,32 @@ public class RecordActivity extends BaseActivity {
 		pages++;
 		temBookContent = new BookContent(temPictureBook.getId());
 		tv_page.setText("第" + (pages + 1) + "页");
-		preview.setBackground(null);
 		ImageLoader.getInstance().displayImage(null, preview);
+		preview.setBackgroundResource(R.drawable.welcom);
+		path_audio.setText("");
 	}
 	
 	// 完成
 	public void onDone(View v) {
+		System.out.println("onDone");
+		new AlertDialog.Builder(this).setTitle("提示").setIcon(android.R.drawable.ic_dialog_info).setMessage("保存并结束本次的编辑？")
+				.setPositiveButton("确定", new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						DataHandle.getInstance().addPictureBook(temPictureBook);
+						temPictureBook = null;
+						finish();
+					}
+				}).setNegativeButton("继续编辑", new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						
+					}
+				}).show();
 		
-		DataHandle.getInstance().addPictureBook(temPictureBook);
-		temPictureBook = null;
-		finish();
 	}
 	
 	// 下一步和完成按钮隐藏
@@ -261,6 +297,7 @@ public class RecordActivity extends BaseActivity {
 		}
 		startActivityForResult(intent, REQUEST_CODE_PIC_LOCAL);
 	}
+	
 	/**
 	 * @方法名：doHandeLocalPic
 	 * @描述：处理得到本机图片
@@ -268,7 +305,6 @@ public class RecordActivity extends BaseActivity {
 	 * @输出：void
 	 */
 	private void doHandeLocalPic(Uri selectedImage) {
-		
 		try {
 			String localFilePath = Constants.PICTUREBOOK_PATH_MYBOOKS + "/" + temPictureBook.getBookDir() + "/" + System.currentTimeMillis()
 					+ ".jpeg";
@@ -299,4 +335,30 @@ public class RecordActivity extends BaseActivity {
 		}
 		
 	}
+		private void doHandeAudio(Uri selectedImage) {
+			try {
+				String realSelectedPath = CommonUtils.getRealPathFromURI(RecordActivity.this, selectedImage);
+				ContentValues value = new ContentValues();
+				value.put(Contract.BookContentContract._PATH_AUDIO, realSelectedPath);
+				path_audio.setText(realSelectedPath);
+				if(temBookContent.getPage() != pages) {
+					// 插入数据
+					temBookContent.setPage(pages);
+					value.put(Contract.BookContentContract._PAGE, pages);
+					value.put(Contract.BookContentContract._BOOK_ID, temBookContent.getBookId());
+					long row = dbHelper.insert(Contract.BookContentContract.TABLE_NAME, value);
+					temBookContent.setId((int)row);
+				}
+				else {
+					// 更新数据
+					dbHelper.update(Contract.BookContentContract.TABLE_NAME, temBookContent.getId(), value);
+				}
+				temBookContent.setPath_audio(realSelectedPath);
+				temPictureBook.addBookContent(temBookContent);
+			}
+			catch(Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 }
