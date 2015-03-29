@@ -51,7 +51,6 @@ public class RecordActivity extends BaseActivity {
 		tv_page = (TextView)findViewById(R.id.tv_page);
 		tv_title = (TextView)findViewById(R.id.tv_title);
 		preview = (ImageView)findViewById(R.id.preview);
-		
 		btn_next = (Button)findViewById(R.id.btn_next);
 		btn_done = (Button)findViewById(R.id.btn_done);
 		btn_pic = (Button)findViewById(R.id.btn_pic);
@@ -67,7 +66,6 @@ public class RecordActivity extends BaseActivity {
 		ImageLoaderConfiguration configuration = ImageLoaderConfiguration.createDefault(this);
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(configuration);
-		// dbHelper.insert("啦啦");
 		showDialog();
 		// tv_page.setText(pages + "");
 		
@@ -165,7 +163,7 @@ public class RecordActivity extends BaseActivity {
 			return;
 		}
 		setControlView(View.VISIBLE);
-//		setMediaInputView(View.VISIBLE);
+		// setMediaInputView(View.VISIBLE);
 		pages++;
 		temBookContent = new BookContent(temPictureBook.getId());
 		tv_page.setText("第" + (pages + 1) + "页");
@@ -189,8 +187,8 @@ public class RecordActivity extends BaseActivity {
 	
 	// 选择图片和语音按钮隐藏
 	private void setMediaInputView(int flag) {
-//		btn_pic.setVisibility(flag);
-//		btn_audio.setVisibility(flag);
+		// btn_pic.setVisibility(flag);
+		// btn_audio.setVisibility(flag);
 	}
 	
 	// 打开相册，选择图片
@@ -218,14 +216,14 @@ public class RecordActivity extends BaseActivity {
 				if(selectedImage != null) {
 					tv_page.setText("第" + (pages + 1) + "页");
 					setControlView(View.VISIBLE);
-//					setMediaInputView(View.INVISIBLE);
+					// setMediaInputView(View.INVISIBLE);
 					doHandeLocalPic(selectedImage);
 				}
 				break;
 			case REQUEST_CODE_AUDIO_LOCAL:// 得到本机语音
 				if(resultCode == RESULT_OK) {
 					setControlView(View.VISIBLE);
-//					setMediaInputView(View.INVISIBLE);
+					// setMediaInputView(View.INVISIBLE);
 					tv_page.setText("第" + (pages + 1) + "页");
 					Uri uri = data.getData();
 				}
@@ -234,7 +232,7 @@ public class RecordActivity extends BaseActivity {
 			case REQUEST_CODE_AUDIO_RECORD:// 录制的声音
 				if(resultCode == RESULT_OK) {
 					setControlView(View.VISIBLE);
-//					setMediaInputView(View.INVISIBLE);
+					// setMediaInputView(View.INVISIBLE);
 					tv_page.setText("第" + (pages + 1) + "页");
 					Uri uri = data.getData();
 				}

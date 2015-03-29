@@ -6,10 +6,10 @@
 
     <ImageView
         android:id="@+id/preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="50dp"
-        android:background="@drawable/bg" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/welcom" />
 
     <Button
         android:id="@+id/button3"
@@ -32,16 +32,17 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onPicture"
-            android:text="pic" />
+            android:background="@drawable/add_pic"
+            android:onClick="onPicture" />
 
         <Button
             android:id="@+id/btn_audio"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onAudio"
-            android:text="audio" />
+            android:layout_marginTop="10dp"
+            android:background="@drawable/add_music"
+            android:onClick="onAudio" />
     </LinearLayout>
 
     <Button
