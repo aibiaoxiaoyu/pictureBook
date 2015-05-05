@@ -6,10 +6,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.GridView;
 
 import com.kid.picturebook.R;
@@ -58,6 +62,32 @@ public class GridBookActivity extends BaseActivity {
 				Intent intent = new Intent(GridBookActivity.this, ViewerActivity.class);
 				intent.putExtra("bookId", lstImageItem.get(position).getId());
 				startActivity(intent);
+			}
+		});
+		gridView.setOnItemLongClickListener(new OnItemLongClickListener() {
+			
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+				// TODO Auto-generated method stub
+				final int pbid = lstImageItem.get(position).getId();
+				if(pbid == -1) {
+					return true;
+				}
+				final CharSequence[] items = {"删除该绘本" }; // 设置选择内容
+				AlertDialog.Builder builder = new AlertDialog.Builder(GridBookActivity.this);
+				builder.setItems(items, new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						lstImageItem.remove(position);
+						DataHandle.getInstance().deletePictureBook(pbid);
+						adapter.notifyDataSetChanged();
+						dialog.dismiss();
+					}
+				});
+				builder.show();
+				return true;
 			}
 		});
 		

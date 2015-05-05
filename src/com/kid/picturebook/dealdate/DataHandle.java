@@ -28,8 +28,8 @@ public class DataHandle {
 	
 	public void initAllPictureBooks() {
 		if(mMapPictureBook == null) {
-			DBHelper helper = DBHelper.getInstance();
 			mMapPictureBook = new HashMap<Integer, PictureBook>();
+			DBHelper helper = DBHelper.getInstance();
 			Cursor cursor = helper.select(PictureBookContract.TABLE_NAME);
 			if(cursor != null) {
 				while(cursor.moveToNext()) {
@@ -77,6 +77,15 @@ public class DataHandle {
 		return mMapBookContents.get(id);
 	}
 	
+	public void deletePictureBook(int id) {
+		if(mMapPictureBook != null) {
+			mMapPictureBook.remove(id);
+		}
+		DBHelper helper = DBHelper.getInstance();
+		helper.delete(PictureBookContract.TABLE_NAME, id);
+		helper.delete(BookContentContract.TABLE_NAME, id);
+		 
+	}
 	public void addPictureBook(PictureBook pictureBook) {
 		if(mMapPictureBook == null) {
 			mMapPictureBook = new HashMap<Integer, PictureBook>();
