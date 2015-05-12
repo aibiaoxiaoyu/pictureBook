@@ -36,7 +36,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:name="com.kid.picturebook.PictureBookApplication"
-        android:theme="@android:style/Theme.Light.NoTitleBar" >
+        android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
         <activity
             android:name="com.kid.picturebook.activity.FlashActivity"
             android:label="@string/app_name"

@@ -32,30 +32,32 @@ public final class R {
         public static final int bg_help=0x7f020007;
         public static final int bg_mine=0x7f020008;
         public static final int btn_back=0x7f020009;
-        public static final int exp=0x7f02000a;
-        public static final int exp1=0x7f02000b;
-        public static final int exp2=0x7f02000c;
-        public static final int exp3=0x7f02000d;
-        public static final int exp4=0x7f02000e;
-        public static final int finish=0x7f02000f;
-        public static final int help_ani=0x7f020010;
-        public static final int home=0x7f020011;
-        public static final int ic_launcher=0x7f020012;
-        public static final int input_book=0x7f020013;
-        public static final int login_kangaroo=0x7f020014;
-        public static final int my_books=0x7f020015;
-        public static final int next=0x7f020016;
-        public static final int pause=0x7f020017;
-        public static final int play=0x7f020018;
-        public static final int tree_up=0x7f020019;
-        public static final int view_next=0x7f02001a;
-        public static final int view_previous=0x7f02001b;
-        public static final int welcom=0x7f02001c;
+        public static final int btn_boder=0x7f02000a;
+        public static final int exp=0x7f02000b;
+        public static final int exp1=0x7f02000c;
+        public static final int exp2=0x7f02000d;
+        public static final int exp3=0x7f02000e;
+        public static final int exp4=0x7f02000f;
+        public static final int finish=0x7f020010;
+        public static final int help_ani=0x7f020011;
+        public static final int home=0x7f020012;
+        public static final int ic_launcher=0x7f020013;
+        public static final int input_book=0x7f020014;
+        public static final int login_kangaroo=0x7f020015;
+        public static final int my_books=0x7f020016;
+        public static final int next=0x7f020017;
+        public static final int pause=0x7f020018;
+        public static final int play=0x7f020019;
+        public static final int tree_up=0x7f02001a;
+        public static final int view_next=0x7f02001b;
+        public static final int view_previous=0x7f02001c;
+        public static final int welcom=0x7f02001d;
     }
     public static final class id {
-        public static final int action_settings=0x7f09001a;
+        public static final int action_settings=0x7f09001c;
         public static final int book_img=0x7f090018;
         public static final int book_name=0x7f090019;
+        public static final int btn=0x7f09001a;
         public static final int btn_audio=0x7f09000d;
         public static final int btn_back=0x7f090004;
         public static final int btn_done=0x7f09000e;
@@ -71,6 +73,7 @@ public final class R {
         public static final int imageView2=0x7f090003;
         public static final int img=0x7f090013;
         public static final int ll=0x7f09000b;
+        public static final int ok=0x7f09001b;
         public static final int path_audio=0x7f090011;
         public static final int pause=0x7f090016;
         public static final int play=0x7f090015;
@@ -90,6 +93,7 @@ public final class R {
         public static final int activity_viewer=0x7f030005;
         public static final int fragment_main=0x7f030006;
         public static final int item_book=0x7f030007;
+        public static final int popwindow=0x7f030008;
     }
     public static final class menu {
         public static final int main=0x7f080000;
