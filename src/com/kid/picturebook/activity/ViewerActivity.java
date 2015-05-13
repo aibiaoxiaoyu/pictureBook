@@ -4,11 +4,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +40,19 @@ public class ViewerActivity extends BaseActivity {
 	private Button btn_play, btn_pause;
 	private VoiceRecorder voiceRecorder;
 	private boolean isAutoPlay = true;
+	private SharedPreferences sp;
+	private static final String LASTX = "lastx";
+	private static final String LASTY = "lasty";
+	
+	private String getLastX() {
+		Log.e("getLastX:",(bookId == 0 ? "0" : bookId) + LASTX + (page == 0 ? "0" : page));
+		return (bookId == 0 ? "0" : bookId) + LASTX + (page == 0 ? "0" : page);
+	}
+	
+	private String getLastY() {
+//		Log.e("getLastY:", (bookId == 0 ? "" : bookId) + LASTY + (page == 0 ? "0" : page));
+		return (bookId == 0 ? "" : bookId) + LASTY + (page == 0 ? "0" : page);
+	}
 	private Handler mHandler = new Handler();
 	private Runnable runnable = new Runnable() {
 		@Override
@@ -75,6 +93,17 @@ public class ViewerActivity extends BaseActivity {
 		}
 		showPage(page);//显示第一页
 		mHandler.postDelayed(runnable, DELAYTIME);//自动播放
+		sp = this.getSharedPreferences("config", Context.MODE_PRIVATE);
+		img.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				setOnClicked(v, event);
+				return true;
+			}
+		});
+		
 	}
 	
 	//回到主界面
@@ -93,8 +122,16 @@ public class ViewerActivity extends BaseActivity {
 	}
 	
 	 //点读功能
-	public void setOnClicked(View v) {
-		showPage(page);
+	public void setOnClicked(View v, MotionEvent event) {
+		int lastx = sp.getInt(getLastX(), 0);
+		int lasty = sp.getInt(getLastY(), 0);
+		Log.e("","lastx:" + lastx + ",getRawX:"+event.getRawX() + "");
+		Log.e("", "lasty:" + lasty + ",getRawY" + event.getRawY() + "");
+		if(event.getRawX() > lastx && (lastx < (event.getRawX() + 180)) && event.getRawY() > lasty && (event.getRawY() < (lasty + 120))) {
+			showToast("点读");
+			Log.e("", "点读");
+			showPage(page);
+		}
 	}
 	
 	// 显示下一页
@@ -172,7 +209,11 @@ public class ViewerActivity extends BaseActivity {
 				img.setBackgroundResource(R.drawable.input_book);//默认图片
 			}
 			else {
-				img.setImageBitmap(CommonUtils.getLoacalBitmap(mList.get(page).getPath_pic()));
+				if(mList.get(page).getPath_pic()==null){
+					img.setBackgroundResource(R.drawable.input_book);//默认图片
+				}else{
+					img.setImageBitmap(CommonUtils.getLoacalBitmap(mList.get(page).getPath_pic()));
+				}
 			}
 			if(voiceRecorder.isPlaying) {
 				voiceRecorder.stopPlayVoice();
@@ -206,7 +247,8 @@ public class ViewerActivity extends BaseActivity {
 		btn_pause.setVisibility(View.GONE);
 		findViewById(R.id.btn_previous).setVisibility(View.VISIBLE);
 		findViewById(R.id.btn_next).setVisibility(View.GONE);
-		showToast("已达到最后一页");
+//		showToast("已达到最后一页");
+//		mHandler.removeCallbacks(runnable);
 		this.page--;
 	}
 	

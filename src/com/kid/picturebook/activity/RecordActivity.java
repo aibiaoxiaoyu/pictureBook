@@ -64,6 +64,18 @@ public class RecordActivity extends BaseActivity {
 	private static final String LASTY = "lasty";
 	private SharedPreferences sp;
 	
+	private String getLastX() {
+		String x=(temPictureBook == null ? "" : temPictureBook.getId()) + LASTX + (temBookContent == null ? "" : temBookContent.getPage());
+		Log.e("getLastX:", x);
+		return x;
+	}
+	
+	private String getLastY() {
+		String y = (temPictureBook == null ? "" : temPictureBook.getId()) + LASTY + (temBookContent == null ? "" : temBookContent.getPage());
+		Log.e("getLastY:", y);
+		return y;
+	}
+
 	private void initPopView() {
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
@@ -85,8 +97,8 @@ public class RecordActivity extends BaseActivity {
 	
 	private void initPopData() {
 		sp = this.getSharedPreferences("config", Context.MODE_PRIVATE);
-		int lastx = sp.getInt(LASTX, 0);
-		int lasty = sp.getInt(LASTY, 0);
+		int lastx = sp.getInt(getLastX(), 0);
+		int lasty = sp.getInt(getLastY(), 0);
 		RelativeLayout.LayoutParams params = (LayoutParams)this.dragBtn.getLayoutParams();
 		params.leftMargin = lastx;
 		params.topMargin = lasty;
@@ -95,8 +107,8 @@ public class RecordActivity extends BaseActivity {
 	
 	public void onPopConfirm(View view) {
 		Editor editor = sp.edit();
-		editor.putInt(LASTX, dragBtn.getLeft());
-		editor.putInt(LASTY, dragBtn.getTop());
+		editor.putInt(getLastX(), dragBtn.getLeft());
+		editor.putInt(getLastY(), dragBtn.getTop());
 		editor.commit();
 		dismissPop();
 		onAudioDialog();
