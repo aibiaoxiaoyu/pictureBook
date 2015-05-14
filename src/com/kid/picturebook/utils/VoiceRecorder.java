@@ -161,7 +161,7 @@ public class VoiceRecorder {
 		mMediaPlayerCallback = callback;
 		AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
 		
-		audioManager.setSpeakerphoneOn(false);
+		audioManager.setSpeakerphoneOn(true);
 		audioManager.setMode(AudioManager.MODE_NORMAL);
 		
 		((Activity)context).setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
