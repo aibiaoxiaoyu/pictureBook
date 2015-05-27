@@ -13,7 +13,7 @@ import com.kid.picturebook.db.Contract.PictureBookContract;
 public class DBHelper extends SQLiteOpenHelper {
 	
 	private final static String DATABASE_NAME = "db_picturebook";
-	private final static int DATABASE_VERSION = 1;
+	private final static int DATABASE_VERSION = 2;
 	private static DBHelper dbHelper;
 	
 	public DBHelper(Context context) {
@@ -29,7 +29,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(sql);
 		sql = "Create table " + BookContentContract.TABLE_NAME + "(" + BookContentContract._ID + " integer primary key autoincrement, "
 				+ BookContentContract._BOOK_ID + " text, " + BookContentContract._DESCRIBE + " text, " + BookContentContract._PATH_AUDIO + " text,"
-				+ BookContentContract._PATH_PIC + " text," + BookContentContract._PAGE + " text );";
+				+ BookContentContract._PATH_PIC + " text," + BookContentContract._AUDIO_TYPE + " integer," + BookContentContract._PAGE + " text );";
 		db.execSQL(sql);
 		
 	}

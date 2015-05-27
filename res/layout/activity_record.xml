@@ -44,6 +44,16 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/add_music"
             android:onClick="onAudio" />
+
+        <Button
+            android:id="@+id/btn_add_talking"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/add_talking"
+            android:onClick="onAddTalking" />
     </LinearLayout>
 
     <Button
@@ -80,20 +90,20 @@
         android:id="@+id/path_audio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:maxLines="2"
-        android:ellipsize="start"
-        android:layout_marginBottom="10dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="50dp"
+        android:ellipsize="start"
+        android:maxLines="2"
         android:text="" />
 
     <TextView
         android:id="@+id/tv_page"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:text=""
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"
+        android:text=""
+        android:textSize="18sp" />
 
 </RelativeLayout>

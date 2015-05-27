@@ -1,6 +1,7 @@
 package com.kid.picturebook.activity;
 
 import java.io.File;
+
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -15,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.text.style.BulletSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.RelativeLayout.LayoutParams;
+
 import com.kid.picturebook.R;
 import com.kid.picturebook.db.Contract;
 import com.kid.picturebook.db.DBHelper;
@@ -46,6 +49,8 @@ public class RecordActivity extends BaseActivity {
 	private static final int REQUEST_CODE_PIC_LOCAL = 100;
 	private static final int REQUEST_CODE_AUDIO_RECORD = 101;
 	private static final int REQUEST_CODE_AUDIO_LOCAL = 102;
+	private static final int REQUEST_CODE_TALKING_RECORD = 103;
+	private static final int REQUEST_CODE_TALKING_LOCAL = 104;
 	private ImageView preview;
 	private TextView path_audio;
 	private TextView tv_page;// 第几页
@@ -54,7 +59,7 @@ public class RecordActivity extends BaseActivity {
 	private PictureBook temPictureBook;
 	private BookContent temBookContent;
 	private int pages = 0;
-	private Button btn_next, btn_done, btn_pic, btn_audio;
+	private Button btn_next, btn_done, btn_pic, btn_audio, btn_add_talking;
 	
 	private PopupWindow pop;
 	private View view;
@@ -63,9 +68,12 @@ public class RecordActivity extends BaseActivity {
 	private static final String LASTX = "lastx";
 	private static final String LASTY = "lasty";
 	private SharedPreferences sp;
+	private final static int TYPE_BECGROUDMUSIC = 0;
+	private final static int TYPE_TALKINGMUSIC = 1;
+	private int selectedType;
 	
 	private String getLastX() {
-		String x=(temPictureBook == null ? "" : temPictureBook.getId()) + LASTX + (temBookContent == null ? "" : temBookContent.getPage());
+		String x = (temPictureBook == null ? "" : temPictureBook.getId()) + LASTX + (temBookContent == null ? "" : temBookContent.getPage());
 		Log.e("getLastX:", x);
 		return x;
 	}
@@ -75,7 +83,7 @@ public class RecordActivity extends BaseActivity {
 		Log.e("getLastY:", y);
 		return y;
 	}
-
+	
 	private void initPopView() {
 		DisplayMetrics dm = getResources().getDisplayMetrics();
 		screenWidth = dm.widthPixels;
@@ -111,7 +119,7 @@ public class RecordActivity extends BaseActivity {
 		editor.putInt(getLastY(), dragBtn.getTop());
 		editor.commit();
 		dismissPop();
-		onAudioDialog();
+		onAudioDialog(TYPE_TALKINGMUSIC);
 	}
 	
 	private void showPop(View view) {
@@ -219,7 +227,9 @@ public class RecordActivity extends BaseActivity {
 		btn_done = (Button)findViewById(R.id.btn_done);
 		btn_pic = (Button)findViewById(R.id.btn_pic);
 		btn_audio = (Button)findViewById(R.id.btn_audio);
+		btn_add_talking = (Button)findViewById(R.id.btn_add_talking);
 		btn_audio.setVisibility(View.INVISIBLE);
+		btn_add_talking.setVisibility(View.INVISIBLE);
 	}
 	
 	@Override
@@ -266,6 +276,7 @@ public class RecordActivity extends BaseActivity {
 				if(selectedImage != null) {
 					tv_page.setText("第" + (pages + 1) + "页");
 					btn_audio.setVisibility(View.VISIBLE);
+					btn_add_talking.setVisibility(View.VISIBLE);
 					setControlView(View.VISIBLE);
 					// setMediaInputView(View.INVISIBLE);
 					doHandeLocalPic(selectedImage);
@@ -277,7 +288,16 @@ public class RecordActivity extends BaseActivity {
 					// setMediaInputView(View.INVISIBLE);
 					tv_page.setText("第" + (pages + 1) + "页");
 					Uri uri = data.getData();
-					doHandeAudio(uri);
+					doHandeAudio(uri, TYPE_BECGROUDMUSIC);
+				}
+				break;
+			case REQUEST_CODE_TALKING_LOCAL:// 得到点读本机语音
+				if(resultCode == RESULT_OK) {
+					setControlView(View.VISIBLE);
+					// setMediaInputView(View.INVISIBLE);
+					tv_page.setText("第" + (pages + 1) + "页");
+					Uri uri = data.getData();
+					doHandeAudio(uri, TYPE_TALKINGMUSIC);
 				}
 				break;
 			
@@ -287,7 +307,16 @@ public class RecordActivity extends BaseActivity {
 					// setMediaInputView(View.INVISIBLE);
 					tv_page.setText("第" + (pages + 1) + "页");
 					Uri uri = data.getData();
-					doHandeAudio(uri);
+					doHandeAudio(uri, TYPE_BECGROUDMUSIC);
+				}
+				break;
+			case REQUEST_CODE_TALKING_RECORD:// 录制的点读声音
+				if(resultCode == RESULT_OK) {
+					setControlView(View.VISIBLE);
+					// setMediaInputView(View.INVISIBLE);
+					tv_page.setText("第" + (pages + 1) + "页");
+					Uri uri = data.getData();
+					doHandeAudio(uri, TYPE_TALKINGMUSIC);
 				}
 				break;
 		
@@ -348,23 +377,46 @@ public class RecordActivity extends BaseActivity {
 	
 	/**
 	 * @方法名：onAduio
-	 * @描述：弹出选择声音选择框
+	 * @描述：弹出选择背景音乐选择框
 	 * @param v
 	 * @输出：void
 	 */
 	public void onAudio(View v) {
+		onAudioDialog(TYPE_BECGROUDMUSIC);
+	}
+	
+	/**
+	 * @方法名：onAddTalking
+	 * @描述：增加点读
+	 * @param v
+	 * @输出：void
+	 * @作者：caizhibiao
+	 */
+	public void onAddTalking(View v) {
 		showPop(v);
 	}
 	
-	private void onAudioDialog() {
-		new AlertDialog.Builder(this).setSingleChoiceItems(new String[] {"录制声音", "选择本地语音" }, 0, new DialogInterface.OnClickListener() {
+	private void onAudioDialog(final int type) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		if(type == TYPE_BECGROUDMUSIC) {
+			builder.setTitle("添加背景音乐");
+		}
+		else {
+			builder.setTitle("添加点读声音");
+		}
+		builder.setSingleChoiceItems(new String[] {"录制声音", "选择本地语音" }, 0, new DialogInterface.OnClickListener() {
 			
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
 				if(which == 0) {// 打开录音机，
 					try {
 						Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-						startActivityForResult(intent, REQUEST_CODE_AUDIO_RECORD);
+						if(type == TYPE_BECGROUDMUSIC) {
+							startActivityForResult(intent, REQUEST_CODE_AUDIO_RECORD);
+						}
+						else {
+							startActivityForResult(intent, REQUEST_CODE_TALKING_RECORD);
+						}
 						// Intent intentFromRecord=new Intent();
 						// intentFromRecord.setType("audio/*");
 						// intentFromRecord.setAction(Intent.ACTION_GET_CONTENT);
@@ -378,19 +430,25 @@ public class RecordActivity extends BaseActivity {
 					}
 				}
 				else {// 打开文件选择
-					showFileChooser();
+					showFileChooser(type);
 				}
 			}
-		}).show();
+		});
+		builder.show();
 	}
 	
 	/** 调用文件选择app来选择文件 **/
-	private void showFileChooser() {
+	private void showFileChooser(int type) {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 		intent.setType("audio/*");
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
 		try {
-			startActivityForResult(Intent.createChooser(intent, "请选择一个语音文件"), REQUEST_CODE_AUDIO_LOCAL);
+			if(type == TYPE_BECGROUDMUSIC) {
+				startActivityForResult(Intent.createChooser(intent, "请选择一个语音文件"), REQUEST_CODE_AUDIO_LOCAL);
+			}
+			else {
+				startActivityForResult(Intent.createChooser(intent, "请选择一个语音文件"), REQUEST_CODE_TALKING_LOCAL);
+			}
 		}
 		catch(android.content.ActivityNotFoundException ex) {
 			// Potentially direct the user to the Market with a Dialog
@@ -502,11 +560,12 @@ public class RecordActivity extends BaseActivity {
 		
 	}
 	
-	private void doHandeAudio(Uri selectedImage) {
+	private void doHandeAudio(Uri selectedImage, int type) {
 		try {
 			String realSelectedPath = CommonUtils.getRealPathFromURI(RecordActivity.this, selectedImage);
 			ContentValues value = new ContentValues();
-			value.put(Contract.BookContentContract._PATH_AUDIO, realSelectedPath);
+			value.put(Contract.BookContentContract._PATH_AUDIO, realSelectedPath);// 语音路径
+			value.put(Contract.BookContentContract._AUDIO_TYPE, type);// 语音路径
 			path_audio.setText(realSelectedPath);
 			if(temBookContent.getPage() != pages) {
 				// 插入数据
