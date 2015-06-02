@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+import android.app.Notification.Action;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,6 +24,7 @@ import com.kid.picturebook.R;
 import com.kid.picturebook.dealdate.DataHandle;
 import com.kid.picturebook.entity.BookContent;
 import com.kid.picturebook.entity.PictureBook;
+import com.kid.picturebook.utils.ClickToPlayRecorder;
 import com.kid.picturebook.utils.CommonUtils;
 import com.kid.picturebook.utils.Constants;
 import com.kid.picturebook.utils.VoiceRecorder;
@@ -39,11 +42,12 @@ public class ViewerActivity extends BaseActivity {
 	private TextView view_page;
 	private Button btn_play, btn_pause;
 	private VoiceRecorder voiceRecorder;
+	private ClickToPlayRecorder clickRecorder;
 	private boolean isAutoPlay = true;
 	private SharedPreferences sp;
 	private static final String LASTX = "lastx";
 	private static final String LASTY = "lasty";
-	
+//	private boolean isClickedAndPlaying=false;
 	private String getLastX() {
 		Log.e("getLastX:",(bookId == 0 ? "0" : bookId) + LASTX + (page == 0 ? "0" : page));
 		return (bookId == 0 ? "0" : bookId) + LASTX + (page == 0 ? "0" : page);
@@ -87,6 +91,7 @@ public class ViewerActivity extends BaseActivity {
 		bookId = intent.getIntExtra("bookId", -1);
 		findViewById(R.id.btn_previous).setVisibility(View.GONE);
 		voiceRecorder = new VoiceRecorder(ViewerActivity.this, null);
+		clickRecorder = new ClickToPlayRecorder(ViewerActivity.this, null);
 		book = DataHandle.getInstance().getPictureBookByBookId(bookId);	// 查找数据
 		if(book!=null){
 			mList = book.getBookContentList();
@@ -99,11 +104,21 @@ public class ViewerActivity extends BaseActivity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				// TODO Auto-generated method stub
-				setOnClicked(v, event);
+//				if(!isClickedAndPlaying) {
+					setOnClicked(v, event);
+//				}
 				return true;
 			}
 		});
-		
+//		img.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				setOnClicked(v, event);
+//				
+//			}
+//		});
 	}
 	
 	//回到主界面
@@ -123,14 +138,37 @@ public class ViewerActivity extends BaseActivity {
 	
 	 //点读功能
 	public void setOnClicked(View v, MotionEvent event) {
+
+		
 		int lastx = sp.getInt(getLastX(), 0);
 		int lasty = sp.getInt(getLastY(), 0);
-		Log.e("","lastx:" + lastx + ",getRawX:"+event.getRawX() + "");
-		Log.e("", "lasty:" + lasty + ",getRawY" + event.getRawY() + "");
+//		Log.e("","lastx:" + lastx + ",getRawX:"+event.getRawX() + "");
+//		Log.e("", "lasty:" + lasty + ",getRawY" + event.getRawY() + "");
 		if(event.getRawX() > lastx && (lastx < (event.getRawX() + 180)) && event.getRawY() > lasty && (event.getRawY() < (lasty + 120))) {
-			showToast("点读");
-			Log.e("", "点读");
-			showPage(page);
+//			isClickedAndPlaying = true;
+			switch(event.getAction()) {
+				case MotionEvent.ACTION_UP:
+					Log.e("ACTION_UP","ACTION_UP");
+					showToast("点读");
+					Log.e("", "点读");
+					if(page < 0) {
+						setViewWhenFirstOne();// 当点击上一页到第一页时，对布局进行设置
+						return ;
+					}
+					showClicktoPlayLocalPage(page);//显示我自己录入的绘本,点读区域
+					view_page.setText((page + 1) + "");
+					break;
+				case MotionEvent.ACTION_DOWN:
+					Log.e("ACTION_DOWN","ACTION_DOWN");
+					if(clickRecorder != null && clickRecorder.isPlaying) {
+						clickRecorder.stopPlayVoice();
+					}
+					break;
+				
+				default:
+					break;
+			}
+			
 		}
 	}
 	
@@ -196,7 +234,34 @@ public class ViewerActivity extends BaseActivity {
 		view_page.setText((page + 1) + "");
 		return false;
 	}
-	
+	//显示我自己录入的绘本
+		private boolean showClicktoPlayLocalPage(int page) {
+			if(mList != null && mList.size() > 0) {
+				int size = mList.size();
+				if(page >= size) {
+//					setViewWhenLastOne(); // 当显示到最后一页时，对布局进行设置
+					return true;
+				}
+				if(mList.get(0).getPath_pic() == null) {
+					img.setBackgroundResource(R.drawable.input_book);//默认图片
+				}
+				else {
+					if(mList.get(page).getPath_pic()==null){
+						img.setBackgroundResource(R.drawable.input_book);//默认图片
+					}else{
+						img.setImageBitmap(CommonUtils.getLoacalBitmap(mList.get(page).getPath_pic()));
+					}
+				}
+				if(clickRecorder.isPlaying) {
+					clickRecorder.stopPlayVoice();
+				}
+			clickRecorder.playVoice(mList.get(page).getPath_click_audio(), null);
+			}
+			else {
+				img.setBackgroundResource(R.drawable.input_book);//默认图片
+			}
+			return false;
+		}
 	//显示我自己录入的绘本
 	private boolean showLocalPage(int page) {
 		if(mList != null && mList.size() > 0) {
@@ -218,7 +283,20 @@ public class ViewerActivity extends BaseActivity {
 			if(voiceRecorder.isPlaying) {
 				voiceRecorder.stopPlayVoice();
 			}
-			voiceRecorder.playVoice(mList.get(page).getPath_audio(),null);
+			voiceRecorder.playVoice(mList.get(page).getPath_bg_audio(),new MediaPlayerCallback() {
+				
+				@Override
+				public void onStop() {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onStart() {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 		}
 		else {
 			img.setBackgroundResource(R.drawable.input_book);//默认图片

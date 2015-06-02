@@ -16,7 +16,8 @@ public class Contract {
 		public static final String _BOOK_ID = "_book_id";// 绘本id
 		public static final String _PAGE = "_page";// 该绘本的第几页
 		public static final String _PATH_PIC = "_path_pic";// 某页的图片地址
-		public static final String _PATH_AUDIO = "_path_audio";// 某页的语音地址
+		public static final String _PATH_BG_AUDIO = "_path_bg_audio";// 某页的背景语音地址
+		public static final String _PATH_CLICK_AUDIO = "_path_click_audio";// 某页的点读语音地址
 		public static final String _AUDIO_TYPE = "_audio_type";// 语音类型，背景音乐还是点读
 		public static final String _DESCRIBE = "_describe";// 某页的图片文字描述
 		

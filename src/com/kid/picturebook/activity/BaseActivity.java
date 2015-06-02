@@ -26,6 +26,6 @@ public abstract class BaseActivity extends Activity {
 	
 	// µ¯³öÌáÊ¾¿ò
 	public void showToast(String text) {
-		Toast.makeText(getApplicationContext(), text, 0).show();
+		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
 	}
 }

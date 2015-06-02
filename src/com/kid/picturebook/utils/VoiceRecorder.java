@@ -52,7 +52,7 @@ public class VoiceRecorder {
 				public void onAudioFocusChange(int focusChange) {
 					if(focusChange == AudioManager.AUDIOFOCUS_LOSS) {
 						if(isPlaying) {
-							stopPlayVoice();
+//							stopPlayVoice();
 						}
 					}
 					else if(focusChange == AudioManager.AUDIOFOCUS_GAIN) {
@@ -161,7 +161,7 @@ public class VoiceRecorder {
 		mMediaPlayerCallback = callback;
 		AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
 		
-		audioManager.setSpeakerphoneOn(true);
+		audioManager.setSpeakerphoneOn(true);//Õ‚∑≈
 		audioManager.setMode(AudioManager.MODE_NORMAL);
 		
 		((Activity)context).setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);

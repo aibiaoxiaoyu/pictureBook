@@ -13,7 +13,7 @@ import com.kid.picturebook.db.Contract.PictureBookContract;
 public class DBHelper extends SQLiteOpenHelper {
 	
 	private final static String DATABASE_NAME = "db_picturebook";
-	private final static int DATABASE_VERSION = 2;
+	private final static int DATABASE_VERSION = 4;
 	private static DBHelper dbHelper;
 	
 	public DBHelper(Context context) {
@@ -28,7 +28,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ PictureBookContract._TITLE + " text, " + PictureBookContract._CREATE_TIME + " text );";
 		db.execSQL(sql);
 		sql = "Create table " + BookContentContract.TABLE_NAME + "(" + BookContentContract._ID + " integer primary key autoincrement, "
-				+ BookContentContract._BOOK_ID + " text, " + BookContentContract._DESCRIBE + " text, " + BookContentContract._PATH_AUDIO + " text,"
+				+ BookContentContract._BOOK_ID + " text, " + BookContentContract._DESCRIBE + " text, " 
+				+ BookContentContract._PATH_BG_AUDIO + " text,"
+				+ BookContentContract._PATH_CLICK_AUDIO + " text,"
 				+ BookContentContract._PATH_PIC + " text," + BookContentContract._AUDIO_TYPE + " integer," + BookContentContract._PAGE + " text );";
 		db.execSQL(sql);
 		
@@ -39,6 +41,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		// TODO Auto-generated method stub
 		// 升级数据库
 		String sql = " DROP TABLE IF EXISTS " + PictureBookContract.TABLE_NAME;
+		db.execSQL(sql);
+		sql = " DROP TABLE IF EXISTS " + BookContentContract.TABLE_NAME;
 		db.execSQL(sql);
 		onCreate(db);
 	}
@@ -89,6 +93,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.delete(tableName, where, whereValue);
 	}
 	
+	public void isExistPathAudio(String tableName, int id, ContentValues cv) {
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(tableName, null, "_id=?", new String[] {id + "" }, null, null, " _id desc");
+	}
+	
 	/**
 	 * @方法名：update
 	 * @描述：更新数据库
@@ -97,6 +106,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * @param cv
 	 * @输出：void
 	 */
+	public void update(String tableName, int id, int type, ContentValues cv) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String where = "_id" + "=? and _audio_type=?";
+		String[] whereValue = {Integer.toString(id), "" + type };
+		db.update(tableName, cv, where, whereValue);
+	}
 	public void update(String tableName, int id, ContentValues cv) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		String where = "_id" + "=?";

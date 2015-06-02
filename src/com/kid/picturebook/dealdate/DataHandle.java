@@ -53,7 +53,8 @@ public class DataHandle {
 					BookContent bookContent = new BookContent(cursor.getInt(cursor.getColumnIndex(BookContentContract._BOOK_ID)));
 					bookContent.setPage(cursor.getInt(cursor.getColumnIndex(BookContentContract._PAGE)));
 					bookContent.setPath_pic(cursor.getString(cursor.getColumnIndex(BookContentContract._PATH_PIC)));
-					bookContent.setPath_audio(cursor.getString(cursor.getColumnIndex(BookContentContract._PATH_AUDIO)));
+					bookContent.setPath_bg_audio(cursor.getString(cursor.getColumnIndex(BookContentContract._PATH_BG_AUDIO)));
+					bookContent.setPath_click_audio(cursor.getString(cursor.getColumnIndex(BookContentContract._PATH_CLICK_AUDIO)));
 					bookContent.setId(cursor.getInt(cursor.getColumnIndex(BookContentContract._ID)));
 					if(mMapPictureBook.get(bookContent.getBookId())!=null){
 						mMapPictureBook.get(bookContent.getBookId()).addBookContent(0,bookContent);
