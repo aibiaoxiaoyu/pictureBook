@@ -49,7 +49,7 @@ public class ViewerActivity extends BaseActivity {
 	private static final String LASTY = "lasty";
 //	private boolean isClickedAndPlaying=false;
 	private String getLastX() {
-		Log.e("getLastX:",(bookId == 0 ? "0" : bookId) + LASTX + (page == 0 ? "0" : page));
+//		Log.e("getLastX:",(bookId == 0 ? "0" : bookId) + LASTX + (page == 0 ? "0" : page));
 		return (bookId == 0 ? "0" : bookId) + LASTX + (page == 0 ? "0" : page);
 	}
 	
@@ -142,10 +142,13 @@ public class ViewerActivity extends BaseActivity {
 		
 		int lastx = sp.getInt(getLastX(), 0);
 		int lasty = sp.getInt(getLastY(), 0);
-//		Log.e("","lastx:" + lastx + ",getRawX:"+event.getRawX() + "");
-//		Log.e("", "lasty:" + lasty + ",getRawY" + event.getRawY() + "");
-		if(event.getRawX() > lastx && (lastx < (event.getRawX() + 180)) && event.getRawY() > lasty && (event.getRawY() < (lasty + 120))) {
-//			isClickedAndPlaying = true;
+		Log.e("","lastx:" + lastx + ",getRawX:"+event.getRawX() + "");
+		Log.e("", "lasty:" + lasty + ",getRawY" + event.getRawY() + "");
+//		if(event.getRawX() > (lastx - 200) && (event.getRawX() < (lastx + 380)) && event.getRawY() > (lasty - 200)
+//				&& (event.getRawY() < (lasty + 380))) {
+			if(event.getRawX() > lastx && (event.getRawX() < (lastx + 540)) && event.getRawY() > (lasty)
+					&& (event.getRawY() < (lasty + 360))) {
+			// isClickedAndPlaying = true;
 			switch(event.getAction()) {
 				case MotionEvent.ACTION_UP:
 					Log.e("ACTION_UP","ACTION_UP");

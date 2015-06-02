@@ -114,6 +114,8 @@ public class RecordActivity extends BaseActivity {
 	
 	public void onPopConfirm(View view) {
 		Editor editor = sp.edit();
+		Log.e("left", dragBtn.getLeft()+"");
+		Log.e("top", dragBtn.getTop()+"");
 		editor.putInt(getLastX(), dragBtn.getLeft());
 		editor.putInt(getLastY(), dragBtn.getTop());
 		editor.commit();
